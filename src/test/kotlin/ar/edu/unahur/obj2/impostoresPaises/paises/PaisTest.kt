@@ -7,46 +7,66 @@ import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 
-class PaisesTest: DescribeSpec({
-
+class PaisTest: DescribeSpec({
     val builder = PaisConcreteBuilder()
-    var argentina = Pais()
-    var brasil = Pais()
-    val chile = Pais()
-    var paraguay = Pais()
+
+    builder.reset()
+    builder.setPoblacion(47327407)
+    builder.setIdiomasOficiales(mutableSetOf("Español"))
+    builder.setCotizacionDelDolar(190.0)
+    builder.setBloquesRegionales(mutableSetOf("SELA"))
+    val argentina = builder.getResult()
+
+    builder.reset()
+    builder.setPoblacion(213993441)
+    builder.setIdiomasOficiales(mutableSetOf("Portugues"))
+    builder.setBloquesRegionales(mutableSetOf("SELA"))
+    val brasil = builder.getResult()
+
+    builder.reset()
+    builder.setPoblacion(7333562)
+    builder.setIdiomasOficiales(mutableSetOf("Español", "Guarani"))
+    builder.setBloquesRegionales(mutableSetOf("SELA"))
+    val paraguay = builder.getResult()
+
+    builder.reset()
+    builder.setCotizacionDelDolar(6.89)
+    var bolivia = builder.getResult()
+
+    builder.reset()
+    builder.setBloquesRegionales(mutableSetOf("AL"))
+    builder.setIdiomasOficiales(mutableSetOf("Español"))
+    val chile = builder.getResult()
+
     val peru = Pais()
-    var bolivia = Pais()
+
+
+    brasil.añadirPaisLimitrofe(argentina)
+    brasil.añadirPaisLimitrofe(paraguay)
+
+    argentina.añadirPaisLimitrofe(brasil)
+    argentina.añadirPaisLimitrofe(paraguay)
+
+    paraguay.añadirPaisLimitrofe(brasil)
+    paraguay.añadirPaisLimitrofe(argentina)
+
 
     describe("Un país") {
         describe("se crea uno nuevo") {
             it("lo inicializamos") { builder.reset() }
 
-            it("con su nombre, código y continente") {
-                builder.setNombre("Bolivia")
-                builder.setCodigoIso3("BOL")
-                builder.setContinente("América")
-            }
-            it("con su población"){
-                builder.setPoblacion(10985059)
-            }
+            builder.reset()
 
-            it("con su superficie"){ builder.setSuperficie(1098581.0) }
-
-            it("con su moneda y cotización del dolar"){
-                builder.setCodigoMoneda("BOB")
-                builder.setCotizacionDelDolar(6.89)
-            }
-            it("con sus paises limítrofes"){
-                builder.setPaisesLimitrofes(mutableSetOf(argentina, brasil, chile, paraguay, peru))
-            }
-
-            it("con sus bloques regionales"){
-                builder.setBloquesRegionales(mutableSetOf("UNASUR"))
-            }
-
-            it("con sus idiomas oficiales"){
-                builder.setIdiomasOficiales(mutableSetOf("Español", "Quechua", "Aymara"))
-            }
+            builder.setNombre("Bolivia")
+            builder.setCodigoIso3("BOL")
+            builder.setContinente("América")
+            builder.setPoblacion(10985059)
+            builder.setSuperficie(1098581.0)
+            builder.setCodigoMoneda("BOB")
+            builder.setCotizacionDelDolar(6.89)
+            builder.setPaisesLimitrofes(mutableSetOf(argentina, brasil, chile, paraguay, peru))
+            builder.setBloquesRegionales(mutableSetOf("UNASUR"))
+            builder.setIdiomasOficiales(mutableSetOf("Español", "Quechua", "Aymara"))
 
             bolivia = builder.getResult()
 
@@ -65,23 +85,17 @@ class PaisesTest: DescribeSpec({
         }
 
         describe("es plurinacional"){
-            argentina.idiomasOficiales.add("Español")
-            paraguay.idiomasOficiales.add("Español")
-            paraguay.idiomasOficiales.add("Guarani")
             it("con un solo idioma oficial"){ argentina.esPlurinacional().shouldBeFalse() }
             it("con más de un idioma oficial"){ paraguay.esPlurinacional().shouldBeTrue()}
         }
 
         describe("es insular (una isla)") {
-            builder.reset()
-            builder.setPaisesLimitrofes(mutableSetOf())
-            var cuba = builder.getResult()
-            builder.reset()
-            builder.setPaisesLimitrofes(mutableSetOf(chile))
-            var peru = builder.getResult()
+            val cuba = Pais()
+            val colombia = Pais()
+            colombia.añadirPaisLimitrofe(peru)
 
             it("sin paises limitrofes") { cuba.esUnaIsla().shouldBeTrue() }
-            it("con paises limitrofes") { peru.esUnaIsla().shouldBeFalse()}
+            it("con paises limitrofes") { colombia.esUnaIsla().shouldBeFalse()}
         }
 
         describe("calcula su densidad poblacional") {
@@ -93,18 +107,6 @@ class PaisesTest: DescribeSpec({
         }
 
         describe("devuelve su vecino más poblado") {
-            brasil.poblacion = 213993441
-            brasil.paisesLimitrofes.add(argentina)
-            brasil.paisesLimitrofes.add(paraguay)
-
-            argentina.poblacion = 47327407
-            argentina.paisesLimitrofes.add(brasil)
-            argentina.paisesLimitrofes.add(paraguay)
-
-            paraguay.poblacion = 7333562
-            paraguay.paisesLimitrofes.add(brasil)
-            paraguay.paisesLimitrofes.add(argentina)
-
             it("probando con el país más poblado"){
                 brasil.vecinoMasPoblado().shouldBe(brasil)
             }
@@ -128,8 +130,6 @@ class PaisesTest: DescribeSpec({
         }
 
         describe("necesitan traducción"){
-            brasil.idiomasOficiales.add("Portugues")
-
             it("con paises que hablan el mismo idioma"){
                 argentina.necesitanTraduccion(paraguay).shouldBeFalse()
                 paraguay.necesitanTraduccion(argentina).shouldBeFalse()
@@ -141,16 +141,6 @@ class PaisesTest: DescribeSpec({
         }
 
         describe("son potenciales aliados"){
-            argentina.bloquesRegionales.add("SELA")
-            argentina.idiomasOficiales.add("Español")
-            brasil.bloquesRegionales.add("SELA")
-            brasil.idiomasOficiales.add("Portugues")
-            paraguay.bloquesRegionales.add("SELA")
-            paraguay.idiomasOficiales.add("Español")
-
-            chile.idiomasOficiales.add("Español")
-            chile.bloquesRegionales.add("AL")
-
             it("con ambos requisitos cumplidos"){
                 argentina.sonPotencialesAliados(paraguay).shouldBeTrue()
             }
@@ -164,9 +154,6 @@ class PaisesTest: DescribeSpec({
         }
 
         describe("conviene ir de compras"){
-            argentina.cotizacionDolar = 190.0
-            bolivia.cotizacionDolar = 6.89
-
             it("con una cotización mayor"){
                 argentina.convieneIrDeCompras(bolivia).shouldBeFalse()
             }

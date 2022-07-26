@@ -23,12 +23,16 @@ class Pais(
     }
 
     fun densidadPoblacional(): Int {
-        return (poblacion!! / superficie!!).roundToInt()
+        return if (poblacion!=null && superficie!=null) { (poblacion!! / superficie!!).roundToInt() }
+                else error("Población o superficie no especificada")
     }
 
     fun vecinoMasPoblado(): Pais {
-        val limitrofeMasPoblado =  paisesLimitrofes.maxByOrNull{ it.poblacion!! }
-        return if (limitrofeMasPoblado!!.poblacion!! > poblacion!!) limitrofeMasPoblado else this
+        val prueba = paisesLimitrofes.map { it.poblacion }.contains(null)
+        return if (poblacion!=null && !prueba){
+            val limitrofeMasPoblado =  paisesLimitrofes.maxByOrNull{ it.poblacion!! }
+            if (limitrofeMasPoblado!!.poblacion!! > poblacion!!) limitrofeMasPoblado else this
+        } else error("Población del país o sus limítrofes no especificada")
     }
 
     fun esLimitrofeCon(pais: Pais): Boolean {
@@ -44,11 +48,13 @@ class Pais(
     }
 
     fun convieneIrDeCompras(pais: Pais): Boolean {
-        return pais.cotizacionDolar!! > cotizacionDolar!!
+        return if (pais.cotizacionDolar!=null && cotizacionDolar!= null) pais.cotizacionDolar!! > cotizacionDolar!!
+                else error("Cotización del dolar origen o destino no especificada")
     }
 
     fun aCuantoEquivale(valor: Double, pais: Pais): Double {
-        return pais.dolarAMonedaLocal(this.monedaLocalADolar(valor))
+        return if (pais.cotizacionDolar!=null && cotizacionDolar!= null) pais.dolarAMonedaLocal(this.monedaLocalADolar(valor))
+                else error("Cotización del dolar origen o destino no especificada")
     }
 
     fun compartenBloqueRegional(pais: Pais): Boolean {
@@ -61,5 +67,9 @@ class Pais(
 
     fun dolarAMonedaLocal(valor: Double): Double {
         return valor * this.cotizacionDolar!!
+    }
+
+    fun añadirPaisLimitrofe(pais: Pais) {
+        paisesLimitrofes.add(pais)
     }
 }

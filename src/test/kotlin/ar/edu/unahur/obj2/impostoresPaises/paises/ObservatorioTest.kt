@@ -8,6 +8,8 @@ import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
 
 class ObservatorioTest: DescribeSpec ({
+    Observatorio.conjuntoPaises.clear()
+
     val builder = PaisConcreteBuilder()
 
     builder.reset()
@@ -105,23 +107,36 @@ class ObservatorioTest: DescribeSpec ({
     builder.setIdiomasOficiales(mutableSetOf("Ingles"))
     val islasSalomon = builder.getResult()
 
-    Observatorio.conjuntoPaises.add(argentina)
-    Observatorio.conjuntoPaises.add(brasil)
-    Observatorio.conjuntoPaises.add(paraguay)
-    Observatorio.conjuntoPaises.add(bolivia)
-    Observatorio.conjuntoPaises.add(chile)
-    Observatorio.conjuntoPaises.add(peru)
+    val irlandaDelNorte = Pais()
+    val francia = Pais()
+    val costaDeMarfil = Pais()
+
+
+    argentina.añadirPaisLimitrofe(brasil)
+    argentina.añadirPaisLimitrofe(chile)
+    argentina.añadirPaisLimitrofe(paraguay)
+    brasil.añadirPaisLimitrofe(argentina)
+    peru.añadirPaisLimitrofe(brasil)
+    peru.añadirPaisLimitrofe(chile)
+    bolivia.añadirPaisLimitrofe(paraguay)
+    chile.añadirPaisLimitrofe(argentina)
+    paraguay.añadirPaisLimitrofe(bolivia)
+    irlanda.añadirPaisLimitrofe(irlandaDelNorte)
+    suiza.añadirPaisLimitrofe(francia)
+    liberia.añadirPaisLimitrofe(costaDeMarfil)
+
+
+    Observatorio.añadirPais(argentina)
+    Observatorio.añadirPais(brasil)
+    Observatorio.añadirPais(paraguay)
+    Observatorio.añadirPais(bolivia)
+    Observatorio.añadirPais(chile)
+    Observatorio.añadirPais(peru)
 
 
 
     describe("Probamos en el observatorio"){
         describe("son limitrofes"){
-            argentina.paisesLimitrofes.add(brasil)
-            argentina.paisesLimitrofes.add(chile)
-            argentina.paisesLimitrofes.add(paraguay)
-            peru.paisesLimitrofes.add(brasil)
-            peru.paisesLimitrofes.add(chile)
-
             it("con paises que si se tienen en las listas"){
                 Observatorio.sonLimitrofes("Argentina", "Brasil").shouldBeTrue()
             }
@@ -168,36 +183,22 @@ class ObservatorioTest: DescribeSpec ({
         }
 
         describe("la lista de los paises con mayor densidad poblacional") {
-            val resultado = Observatorio.cincoElementosConMayorDensPob()
-
-            resultado.shouldContainAll("ARG", "BRA", "PRY", "CHL", "PER")
-            resultado.shouldNotContain("BOL")
+            Observatorio.cincoElementosConMayorDensPob().shouldContainAll("ARG", "BRA", "PRY", "CHL", "PER")
+            Observatorio.cincoElementosConMayorDensPob().shouldNotContain("BOL")
         }
 
-        Observatorio.conjuntoPaises.add(irlanda)
-        Observatorio.conjuntoPaises.add(suiza)
-        Observatorio.conjuntoPaises.add(japon)
-        Observatorio.conjuntoPaises.add(madagascar)
-        Observatorio.conjuntoPaises.add(liberia)
-        Observatorio.conjuntoPaises.add(islasSalomon)
+        Observatorio.añadirPais(irlanda)
+        Observatorio.añadirPais(suiza)
+        Observatorio.añadirPais(japon)
+        Observatorio.añadirPais(madagascar)
+        Observatorio.añadirPais(liberia)
+        Observatorio.añadirPais(islasSalomon)
 
         describe("continente con mas paises plurinacionales") {
             Observatorio.continenteConMasPaisesPlurinacionales().shouldBe("Europa")
         }
 
         describe("densidad poblacional de paises insulares") {
-            val irlandaDelNorte = Pais()
-            val francia = Pais()
-            val costaDeMarfil = Pais()
-            argentina.paisesLimitrofes.add(brasil)
-            bolivia.paisesLimitrofes.add(paraguay)
-            brasil.paisesLimitrofes.add(argentina)
-            chile.paisesLimitrofes.add(argentina)
-            paraguay.paisesLimitrofes.add(bolivia)
-            peru.paisesLimitrofes.add(bolivia)
-            irlanda.paisesLimitrofes.add(irlandaDelNorte)
-            suiza.paisesLimitrofes.add(francia)
-            liberia.paisesLimitrofes.add(costaDeMarfil)
 
             Observatorio.promedioDensPobPaisesInsulares().shouldBe(135)
         }

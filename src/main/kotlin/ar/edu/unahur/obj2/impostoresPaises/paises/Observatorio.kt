@@ -6,31 +6,36 @@ object Observatorio {
     fun sonLimitrofes(paisA: String, paisB: String): Boolean {
         val primerPais = conjuntoPaises.find { it.nombre == paisA }
         val segundoPais = conjuntoPaises.find { it.nombre == paisB }
-        return if (primerPais!=null && segundoPais!=null) primerPais.esLimitrofeCon(segundoPais) else false
+        return if (primerPais!=null && segundoPais!=null) primerPais.esLimitrofeCon(segundoPais)
+                else error("No se encontró pais/es con ese/os nombre/s")
     }
 
     fun necesitanTraduccion(paisA: String, paisB: String): Boolean {
         val primerPais = conjuntoPaises.find { it.nombre == paisA }
         val segundoPais = conjuntoPaises.find { it.nombre == paisB }
-        return if (primerPais!=null && segundoPais!=null) primerPais.necesitanTraduccion(segundoPais) else false
+        return if (primerPais!=null && segundoPais!=null) primerPais.necesitanTraduccion(segundoPais)
+                else error("No se encontró pais/es con ese/os nombre/s")
     }
 
     fun sonPotencialesAliados(paisA: String, paisB: String): Boolean {
         val primerPais = conjuntoPaises.find { it.nombre == paisA }
         val segundoPais = conjuntoPaises.find { it.nombre == paisB }
-        return if (primerPais!=null && segundoPais!=null) primerPais.sonPotencialesAliados(segundoPais) else false
+        return if (primerPais!=null && segundoPais!=null) primerPais.sonPotencialesAliados(segundoPais)
+                else error("No se encontró pais/es con ese/os nombre/s")
     }
 
     fun convieneIrDeCompras(paisA: String, paisB: String): Boolean {
         val primerPais = conjuntoPaises.find { it.nombre == paisA }
         val segundoPais = conjuntoPaises.find { it.nombre == paisB }
-        return if (primerPais!=null && segundoPais!=null) primerPais.convieneIrDeCompras(segundoPais) else false
+        return if (primerPais!=null && segundoPais!=null) primerPais.convieneIrDeCompras(segundoPais)
+                else error("No se encontró pais/es con ese/os nombre/s")
     }
 
     fun aCuantoEquivale(valor: Double, paisA: String, paisB: String): Double {
         val primerPais = conjuntoPaises.find { it.nombre == paisA }
         val segundoPais = conjuntoPaises.find { it.nombre == paisB }
-        return if (primerPais!=null && segundoPais!=null) primerPais.aCuantoEquivale(valor, segundoPais) else 0.0
+        return if (primerPais!=null && segundoPais!=null) primerPais.aCuantoEquivale(valor, segundoPais)
+                else error("No se encontró pais/es con ese/os nombre/s")
     }
 
     fun cincoElementosConMayorDensPob(): Set<String> {
@@ -60,5 +65,9 @@ object Observatorio {
         var numPaisesInsulares = conjuntoPaises.count { it.esUnaIsla() }
 
         return totalDensPob / numPaisesInsulares
+    }
+
+    fun añadirPais(pais: Pais) {
+        conjuntoPaises.add(pais)
     }
 }
